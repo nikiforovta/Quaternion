@@ -1,12 +1,11 @@
-package quaternion;
 import java.util.*;
 import static java.lang.Math.*;
 
 public final class Quaternion {
-  private final double rat;
-  private final double i;
-  private final double j;
-  private final double k;
+  private double rat;
+  private double i;
+  private double j;
+  private double k;
 
   public Quaternion(double rat, double i, double j, double k) {
     this.rat = rat;
@@ -15,8 +14,16 @@ public final class Quaternion {
     this.k = k;
   }
 
+  public Quaternion quaternionRound() {
+    rat = round(rat);
+    i = round(i);
+    j = round(j);
+    k = round(k);
+    return new Quaternion(rat, i, j, k);
+  }
+
   //построение кватерниона заданием оси и угла поворота
-  public Quaternion axisAngle(Vector<Double> axis, double angle) {
+  public Quaternion axisAngle(List<Double> axis, double angle) {
     double halfAngle = angle / 2;
     double rat = axis.get(0) * cos(halfAngle);
     double i = axis.get(0) * sin(halfAngle);
@@ -37,12 +44,12 @@ public final class Quaternion {
 
   //сложение
   public Quaternion plus(Quaternion other) {
-    return new Quaternion(rat + other.rat, i + other.i, j + other.j, k + other.k);
+    return new Quaternion(rat + other.rat, i + other.i, j + other.j, k + other.k).quaternionRound();
   }
 
   //вычитание
   public Quaternion minus(Quaternion other) {
-    return new Quaternion(rat - other.rat, i - other.i, j - other.j, k - other.k);
+    return new Quaternion(rat - other.rat, i - other.i, j - other.j, k - other.k).quaternionRound();
   }
 
   //умножение
@@ -51,17 +58,17 @@ public final class Quaternion {
     double i = this.rat * other.i + this.i * other.rat + this.j * other.k - this.k * other.j;
     double j = this.rat * other.j + this.j * other.rat + this.k * other.i - this.i * other.k;
     double k = this.rat * other.k + this.i * other.j + this.k * other.rat - this.j * other.k;
-    return new Quaternion(rat, i, j, k);
+    return new Quaternion(rat, i, j, k).quaternionRound();
   }
 
   //деление
   public Quaternion divide(Quaternion other) {
-    return this.times(other.pairing()).timesScal(pow(other.abs(), -2));
+    return (this.times(other.pairing()).timesScal(pow(other.abs(), -2))).quaternionRound();
   }
 
   //модуль
   public double abs() {
-    return sqrt(rat * rat + i * i + j * j + k * k);
+    return round(sqrt(rat * rat + i * i + j * j + k * k));
   }
 
   //получение скалярной части
@@ -85,12 +92,33 @@ public final class Quaternion {
   }
 
   //определение оси
-  public Vector<Double> getAxis() {
+  public List<Double> getAxis() {
     double halfAngle = this.getAngle() / 2;
-    Vector<Double> res = new Vector<>();
+    List<Double> res = new ArrayList<>();
     res.add(0, rat / cos(halfAngle));
     res.add(1, j * cos(halfAngle) + k * sin(halfAngle));
     res.add(2, -j * sin(halfAngle) + k * cos(halfAngle));
     return res;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) return true;
+    if (obj instanceof Quaternion) {
+      Quaternion other = (Quaternion) obj;
+      return rat == other.rat && i == other.i && j == other.j && k == other.k;
+    }
+    return false;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder a = new StringBuilder();
+    if (rat < 0) a.append("-");
+    a.append(rat);
+    if (i > 0.0) a.append("+" + i + "i");
+    if (j > 0.0) a.append("+" + j + "j");
+    if (k > 0.0) a.append("+" + k + "k");
+    return a.toString();
   }
 }
