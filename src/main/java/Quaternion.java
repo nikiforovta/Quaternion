@@ -2,24 +2,24 @@ import java.util.*;
 import static java.lang.Math.*;
 
 public final class Quaternion {
-  private double rat;
-  private double i;
-  private double j;
-  private double k;
+  private final double rat;
+  private final double i;
+  private final double j;
+  private final double k;
 
-  public Quaternion(double rat, double i, double j, double k) {
-    this.rat = rat;
-    this.i = i;
-    this.j = j;
-    this.k = k;
+  public Quaternion(double a, double b, double c, double d) {
+    this.rat = a;
+    this.i = b;
+    this.j = c;
+    this.k = d;
   }
 
   public Quaternion quaternionRound() {
-    rat = round(rat);
-    i = round(i);
-    j = round(j);
-    k = round(k);
-    return new Quaternion(rat, i, j, k);
+    double a = round(rat);
+    double b = round(i);
+    double c = round(j);
+    double d = round(k);
+    return new Quaternion(a, b, c, d);
   }
 
   //построение кватерниона заданием оси и угла поворота
